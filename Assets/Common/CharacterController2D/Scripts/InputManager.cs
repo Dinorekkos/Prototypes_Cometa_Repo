@@ -18,5 +18,7 @@ namespace CometaPrototypes.CharacterController2D
             //jumpPressed = context.ReadValue<bool>();
             Debug.Log ("OnJumpAction!");
         }
+
+        
     }
 }
