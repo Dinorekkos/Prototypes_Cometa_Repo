@@ -33,6 +33,14 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Movement"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""e73cbbfa-c010-4a2c-b485-cafbd9ece4c3"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -57,6 +65,61 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
                     ""action"": ""MouseY"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""add9499e-aad1-4eac-b66b-838b336a64ab"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""2b8c002b-7fa2-47a6-b088-6b51a3f0d7b9"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""9f24c4cf-f2f5-4bbe-84db-0af1e046850b"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""b4e4840b-c6d2-4fc6-a17c-0ae6b3c7f76c"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""566cc7e1-e145-499d-a29b-013e4f98d60f"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -67,6 +130,7 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_MouseX = m_Player.FindAction("MouseX", throwIfNotFound: true);
         m_Player_MouseY = m_Player.FindAction("MouseY", throwIfNotFound: true);
+        m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -118,12 +182,14 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_MouseX;
     private readonly InputAction m_Player_MouseY;
+    private readonly InputAction m_Player_Movement;
     public struct PlayerActions
     {
         private @ChaoticPull_InputActions m_Wrapper;
         public PlayerActions(@ChaoticPull_InputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @MouseX => m_Wrapper.m_Player_MouseX;
         public InputAction @MouseY => m_Wrapper.m_Player_MouseY;
+        public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -139,6 +205,9 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
                 @MouseY.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseY;
                 @MouseY.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseY;
                 @MouseY.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseY;
+                @Movement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
+                @Movement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
+                @Movement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -149,6 +218,9 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
                 @MouseY.started += instance.OnMouseY;
                 @MouseY.performed += instance.OnMouseY;
                 @MouseY.canceled += instance.OnMouseY;
+                @Movement.started += instance.OnMovement;
+                @Movement.performed += instance.OnMovement;
+                @Movement.canceled += instance.OnMovement;
             }
         }
     }
@@ -157,5 +229,6 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
     {
         void OnMouseX(InputAction.CallbackContext context);
         void OnMouseY(InputAction.CallbackContext context);
+        void OnMovement(InputAction.CallbackContext context);
     }
 }
