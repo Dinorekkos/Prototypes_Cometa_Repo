@@ -1,0 +1,52 @@
+{
+    "name": "ChaoticPull_InputActions",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "dae51824-352c-4a8b-93cf-088ed80f17ff",
+            "actions": [
+                {
+                    "name": "MouseX",
+                    "type": "Value",
+                    "id": "d7c611a9-47e4-41ea-adf7-4618bc69f005",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "MouseY",
+                    "type": "Value",
+                    "id": "4118b4e3-3e44-42e0-9df3-d461246e3d7f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4da7bf31-729e-4b95-9c59-ff2e361a8a93",
+                    "path": "<Mouse>/delta/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c2f6c589-0d59-46db-9552-727e26d58efb",
+                    "path": "<Mouse>/delta/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseY",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
