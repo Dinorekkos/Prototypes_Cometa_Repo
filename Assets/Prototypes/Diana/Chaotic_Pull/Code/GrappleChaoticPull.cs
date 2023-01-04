@@ -10,9 +10,14 @@ namespace Diana_ChaoticPull
     {
         #region variables
 
+        [Header("Grapple Settings")]
+        [SerializeField] bool is2D = false;
+        [SerializeField] bool isMultiple = false;
+        
 
         Mouse _mouse;
         private Vector2 _mouseAxis;
+        GrappleInteractablesType _interactableType;
         
         #endregion
 
@@ -27,24 +32,30 @@ namespace Diana_ChaoticPull
 
         void Update()
         {
-            if (_mouse.leftButton.wasPressedThisFrame)
+            if (!is2D)
             {
-                Debug.Log("Left Click");
-                SendRay();       
+                if (_mouse.leftButton.wasPressedThisFrame)
+                {
+                    _mouseAxis = _mouse.position.ReadValue();
+                    SendRay(_mouseAxis);
+                }
             }
         }
         #endregion
 
         #region private methods
 
-        void SendRay()
+        void SendRay(Vector3 origin)
         {
-            _mouseAxis = _mouse.position.ReadValue();
             RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(_mouseAxis);
+            Ray ray = Camera.main.ScreenPointToRay(origin);
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log(hit.collider.gameObject.name);
+                GrappleObject grappleObject = hit.collider.GetComponent<GrappleObject>();
+                if(grappleObject != null)
+                {
+                    _interactableType = grappleObject.SendGrappleInteractableType(transform.position);
+                }
             }
         }
         #endregion
