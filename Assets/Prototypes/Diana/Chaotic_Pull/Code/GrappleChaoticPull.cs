@@ -13,11 +13,15 @@ namespace Diana_ChaoticPull
         [Header("Grapple Settings")]
         [SerializeField] bool is2D = false;
         [SerializeField] bool isMultiple = false;
+        [SerializeField] GrappleInteractablesType _interactableType = GrappleInteractablesType.None;
+        [SerializeField] float _grappleSpeed = 10f;
+
+        [Header("Player Settings")]
+        [SerializeField] Transform _playerTransform = null;
         
 
         Mouse _mouse;
         private Vector2 _mouseAxis;
-        GrappleInteractablesType _interactableType;
         
         #endregion
 
@@ -34,7 +38,7 @@ namespace Diana_ChaoticPull
         {
             if (!is2D)
             {
-                if (_mouse.leftButton.wasPressedThisFrame)
+                if (_mouse.leftButton.isPressed)
                 {
                     _mouseAxis = _mouse.position.ReadValue();
                     SendRay(_mouseAxis);
@@ -54,10 +58,22 @@ namespace Diana_ChaoticPull
                 GrappleObject grappleObject = hit.collider.GetComponent<GrappleObject>();
                 if(grappleObject != null)
                 {
-                    _interactableType = grappleObject.SendGrappleInteractableType(transform.position);
+                    _interactableType = grappleObject.SendGrappleInteractableType(transform.position, _grappleSpeed);
+
+                    if (_interactableType == GrappleInteractablesType.TargetObject)
+                    {
+                        MovePlayerToTarget(hit.transform.position);
+                    }
                 }
             }
         }
+        
+        void MovePlayerToTarget(Vector3 targetPosition)
+        {
+            _playerTransform.position = Vector3.MoveTowards(_playerTransform.position, targetPosition, (_grappleSpeed * 2) * Time.deltaTime);
+        }
+        
+        
         #endregion
         
         

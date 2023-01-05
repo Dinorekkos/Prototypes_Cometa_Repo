@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a6a3be13263ec54fb5c5282d28ef184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grappleInteractableType: 0
+  _grappleInteractableType: 1
 --- !u!65 &15456343
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -396,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a6a3be13263ec54fb5c5282d28ef184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grappleInteractableType: 1
+  _grappleInteractableType: 2
 --- !u!65 &286595387
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -504,6 +504,18 @@ PrefabInstance:
     - target: {fileID: 1332538494, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
       propertyPath: m_SizeDelta.y
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 44990035749455223, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 44990035749455223, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 882210687595846344, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 882210687595846345, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
       propertyPath: m_RootOrder
@@ -664,7 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a6a3be13263ec54fb5c5282d28ef184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grappleInteractableType: 0
+  _grappleInteractableType: 1
 --- !u!65 &765231364
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -780,6 +792,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 882210687595846349, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
   m_PrefabInstance: {fileID: 675793277}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1089645617 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 882210687595846345, guid: 559c2ca4a97e8c44ca080dfa665df7b1, type: 3}
+  m_PrefabInstance: {fileID: 675793277}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1089645618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -794,6 +811,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   is2D: 0
   isMultiple: 0
+  _interactableType: 0
+  _grappleSpeed: 10
+  _playerTransform: {fileID: 1089645617}
 --- !u!1 &1122357273
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,7 +1037,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a6a3be13263ec54fb5c5282d28ef184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grappleInteractableType: 1
+  _grappleInteractableType: 2
 --- !u!65 &1951021454
 BoxCollider:
   m_ObjectHideFlags: 0

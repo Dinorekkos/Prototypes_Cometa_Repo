@@ -37,31 +37,26 @@ namespace Diana_ChaoticPull
 
         
 
-        public GrappleInteractablesType SendGrappleInteractableType(Vector3 position)
+        public GrappleInteractablesType SendGrappleInteractableType(Vector3 position, float speed)
         {
             switch (GrappleInteractablesType)
             {
                 case GrappleInteractablesType.PullObject:
-                    PullObject(position);
+                    PullObject(position, speed);
                     break;
                     
                 case GrappleInteractablesType.TargetObject:
-                    SendPositionToPlayer(position);
                     break;
             }
             return GrappleInteractablesType;
         }
 
-        public void PullObject(Vector3 targetPos)
+        void PullObject(Vector3 targetPos, float speed)
         {
-            Debug.Log("Pulling Object");
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
         }
 
-        public void SendPositionToPlayer(Vector3 targetPos)
-        {
-            Debug.Log("Move Player to Target");
-
-        }
+       
         #endregion
 
     }

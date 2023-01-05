@@ -15,15 +15,18 @@ public class PlayerMovement : MonoBehaviour
     Vector3 verticalVelocity = Vector3.zero;
     Vector2 horizontalInput;
 
+    private bool _isGrounded;
     public void ReceiveInput (Vector2 _horizontalInput)
     {
         if(lockedMovement) return;
         horizontalInput = _horizontalInput;
     }
     private void Update() {
+        
         if (lockedMovement) return;
         Vector3 horizontalVelocity = (transform.right * horizontalInput.x + transform.forward * horizontalInput.y) * movementSpeed;
         characterController.Move(horizontalVelocity * Time.deltaTime);
+        
     }
 
 }
