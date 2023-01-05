@@ -5,14 +5,24 @@ using UnityEngine;
 
 namespace CometaPrototypes.CharacterController2D
 {
+    [RequireComponent(typeof(BoxCollider2D))]
     public class CharacterController2D : MonoBehaviour
     {
+        public CharacterController2DState State { get; private set; }
+
         [Header("Parameters")]
         public CharacterControllerParameters Parameters;
 
         [Header("Collisions")]
+        [Tooltip("The layer mask the platforms are on")]
         public LayerMask PlatformMask;
 
+        [Tooltip("gives you the object the character is standing on")]
+        public GameObject StandingOn;
+        //the object the character was standing on last frame
+        public GameObject StandingOnLastFrame { get; private set; }
+        //the object the collider the character is standing on
+        public Collider2D StandingOnCollider { get; private set; }
         public Vector2 Speed { get { return _speed; } }
 
         [Header("Raycasting")]
@@ -25,12 +35,24 @@ namespace CometaPrototypes.CharacterController2D
         [Tooltip("a small value added to all vertic al raycasts to accomodate for edge cases")]
         public float RayOffsetVertical = 0.05f;
 
+        [Tooltip("the time (inseconds) since the last time the character was grounded")]
+        public float TimeAirborne = 0f;
+
         public float DeltaTime { get { return Time.deltaTime; } }
+
+        public Vector2 ExternalForce
+        {
+            get
+            {
+                return _externalForce;
+            }
+        }
 
         private Vector2 _speed;
         private float _friction = 0;
         private float _fallSlowFactor;
         private float _currentGravity = 0;
+        private Vector2 _externalForce;
         private Vector2 _newPosition;
         private Transform _transform;
         private BoxCollider2D _boxCollider;
@@ -68,13 +90,63 @@ namespace CometaPrototypes.CharacterController2D
         private void Initialization()
         {
             _transform = transform;
+            _boxCollider = GetComponent<BoxCollider2D>();
+
+            _contactList = new List<RaycastHit2D>();
+            State = new CharacterController2DState();
+
+            _belowHitStorage = new RaycastHit2D[NumberOfVerticalRays];
+
+            State.Reset();
+            SetRaysParameters();
+        }
+
+        public void AddForce(Vector2 force)
+        {
+            _speed += force;
+            _externalForce += force;
+            ClampSpeed();
+            ClampExternalForce();
+        }
+
+        public void AddHorizontalForce(float x)
+        {
+            _speed.x += x;
+            _externalForce.x += x;
+            ClampSpeed();
+            ClampExternalForce();
+        }
+
+        public void AddVerticalForce(float y)
+        {
+            _speed.y += y;
+            _externalForce.y += y;
+            ClampSpeed();
+            ClampExternalForce();
+        }
+
+        public void SetForce(Vector2 force)
+        {
+            _speed = force;
+            _externalForce = force;
+            ClampSpeed();
+            ClampExternalForce();
         }
 
         public void SetHorizontalForce(float x)
         {
             _speed.x = x;
+            _externalForce.x = x;
             ClampSpeed();
+            ClampExternalForce();
+        }
 
+        public void SetVerticalForce(float y)
+        {
+            _speed.y = y;
+            _externalForce.y = y;
+            ClampSpeed();
+            ClampExternalForce();
         }
 
         private void Update()
@@ -131,6 +203,23 @@ namespace CometaPrototypes.CharacterController2D
 
         private void CastRaysBelow()
         {
+            _friction = 0;
+
+            if (_newPosition.y < -_smallValue)
+            {
+                State.IsFalling = true;
+            }
+            else
+            {
+                State.IsFalling = false;
+            }
+
+            if ((Parameters.Gravity > 0) && (!State.IsFalling))
+            {
+                State.IsCollidingBelow = false;
+                return;
+            }
+
             float rayLength = (_boundsHeight / 2) + RayOffsetVertical;
 
             if (_newPosition.y < 0)
@@ -160,12 +249,25 @@ namespace CometaPrototypes.CharacterController2D
             {
                 Vector2 rayOriginPoint = Vector2.Lerp(_verticalRayCastFromLeft, _verticalRaycastToRight, (float)i/(float)(NumberOfVerticalRays - 1));
 
+                if ((_newPosition.y > 0) && (!State.WasGroundedLastFrame))
+                {
+
+                } else
+                {
+                    _belowHitStorage[i] = MMDebug.RayCast(rayOriginPoint, -transform.up, rayLength, _raysBelowLayerMaskPlatforms, Color.blue, Parameters.DrawRaycastsGizmos);
+                }
+
                 float distance = MMMaths.DistanceBetweenPointAndLine(_belowHitStorage[smallestDistanceIndex].point, _verticalRayCastFromLeft, _verticalRaycastToRight);
 
                 if (_belowHitStorage[i])
                 {
                     hitConnected = true;
 
+                    if (_belowHitStorage[i].distance < smallestDistance)
+                    {
+                        smallestDistanceIndex = i;
+                        smallestDistance = _belowHitStorage[i].distance;
+                    }
                 }
 
                 if (distance < _smallValue)
@@ -176,7 +278,41 @@ namespace CometaPrototypes.CharacterController2D
 
             if (hitConnected)
             {
+                StandingOn = _belowHitStorage[smallestDistanceIndex].collider.gameObject;
+                StandingOnCollider = _belowHitStorage[smallestDistanceIndex].collider;
 
+                State.IsFalling = false;
+                State.IsCollidingBelow = true;
+
+                // if we're applying an external force (jumping, jetpack...) we only apply that
+                if (_externalForce.y > 0 && _speed.y > 0)
+                {
+                    _newPosition.y = _speed.y * DeltaTime;
+                    State.IsCollidingBelow = false;
+                }
+                // if not, we just adjust the position based on the raycast hit
+                else
+                {
+                    float distance = MMMaths.DistanceBetweenPointAndLine(_belowHitStorage[smallestDistanceIndex].point, _verticalRayCastFromLeft, _verticalRaycastToRight);
+
+                    _newPosition.y = -distance
+                        + _boundsHeight / 2
+                        + RayOffsetVertical;
+                }
+
+                if (!State.WasGroundedLastFrame && _speed.y > 0)
+                {
+                    _newPosition.y += _speed.y * DeltaTime;
+                }
+
+                if (Mathf.Abs(_newPosition.y) < _smallValue)
+                {
+                    _newPosition.y = 0;
+                }
+            }
+            else
+            {
+                State.IsCollidingBelow = false;
             }
 
         }
@@ -184,6 +320,13 @@ namespace CometaPrototypes.CharacterController2D
         private void ClampSpeed()
         {
             _speed.x = Mathf.Clamp(_speed.x, -Parameters.MaxVelocity.x, Parameters.MaxVelocity.x);
+            _speed.y = Mathf.Clamp(_speed.y, -Parameters.MaxVelocity.y, Parameters.MaxVelocity.y);
+        }
+
+        private void ClampExternalForce()
+        {
+            _externalForce.x = Mathf.Clamp(_externalForce.x, -Parameters.MaxVelocity.x, Parameters.MaxVelocity.x);
+            _externalForce.y = Mathf.Clamp(_externalForce.y, -Parameters.MaxVelocity.y, Parameters.MaxVelocity.y);
         }
 
         private void SetRaysParameters()
@@ -213,6 +356,23 @@ namespace CometaPrototypes.CharacterController2D
 
             _boundsWidth = Vector2.Distance(_boundsBottomLeftCorner, _boundsBottomRightCorner);
             _boundsHeight = Vector2.Distance(_boundsBottomLeftCorner, _boundsTopLeftCorner);
+        }
+
+        public void CollisionsOn()
+        {
+            PlatformMask = _platformMaskSave;
+        }
+
+        public void GravityActive(bool state)
+        {
+            if (state)
+            {
+                _gravityActive = true;
+            }
+            else
+            {
+                _gravityActive = false;
+            }
         }
     }
 }

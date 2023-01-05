@@ -23,4 +23,8 @@ public class CharacterControllerParameters
     /// general speed factor
     [Tooltip("general speed factor")]
     public float SpeedFactor = 1;
+
+    [Header("Gizmos")]
+    [Tooltip("if set to true, will draw the various raycast used by the charactercontroller to detect collisions in scene view if gizmos are active")]
+    public bool DrawRaycastsGizmos = true;
 }

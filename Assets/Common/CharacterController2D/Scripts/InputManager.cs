@@ -17,8 +17,6 @@ namespace CometaPrototypes.CharacterController2D
         public Vector2 Movement { get => _movement; private set => _movement = value; }
         public bool JumpPressed { get => _jumpPressed; private set => _jumpPressed = value; }
 
-        public MMInput.IMButton JumpButton { get; protected set; }
-
         private void Awake()
         {
             InputActions = new Input_CharacterController2D();
