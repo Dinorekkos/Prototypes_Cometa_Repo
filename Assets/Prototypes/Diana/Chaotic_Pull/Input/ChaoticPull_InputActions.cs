@@ -20,7 +20,7 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
             ""actions"": [
                 {
                     ""name"": ""MouseX"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""d7c611a9-47e4-41ea-adf7-4618bc69f005"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
@@ -28,7 +28,7 @@ public class @ChaoticPull_InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": ""MouseY"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""4118b4e3-3e44-42e0-9df3-d461246e3d7f"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",

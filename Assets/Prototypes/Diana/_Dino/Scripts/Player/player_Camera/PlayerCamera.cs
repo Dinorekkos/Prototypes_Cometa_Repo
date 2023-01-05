@@ -25,17 +25,15 @@ public class PlayerCamera : MonoBehaviour
         visibleCursor = Cursor.visible;
     }
 
-    private void Update() {
+    private void Update() 
+    {
         transform.Rotate(Vector3.up, mouseX * Time.deltaTime);
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -cameraLimit,cameraLimit);
         Vector3 targetRotation = transform.eulerAngles;
         targetRotation.x = xRotation;
         transformCamera.eulerAngles = targetRotation;
-
         
-       
-
     }
     public void ReceiveInput (Vector2 mouseInput)
     {
