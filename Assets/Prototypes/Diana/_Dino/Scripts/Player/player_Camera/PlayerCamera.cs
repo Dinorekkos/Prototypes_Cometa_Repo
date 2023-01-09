@@ -14,6 +14,8 @@ public class PlayerCamera : MonoBehaviour
     [Header("Camera")]
     [SerializeField] Transform transformCamera;
 
+    [SerializeField] private CursorLockMode _cursorLockMode;
+
     [SerializeField] private bool visibleCursor = false;
     float cameraLimit = 85f;
     float xRotation = 0;
@@ -21,7 +23,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = _cursorLockMode;
         visibleCursor = Cursor.visible;
     }
 
