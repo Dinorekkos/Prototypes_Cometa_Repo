@@ -264,8 +264,6 @@ namespace CometaPrototypes.CharacterController2D
 
         public void JumpStart()
         {
-            Debug.Log("<color=green>JumpStart()</color>");
-
             if (!EvaluateJumpConditions())
             {
                 return;
@@ -298,7 +296,6 @@ namespace CometaPrototypes.CharacterController2D
 
             // we make the character jump
             _controller.SetVerticalForce(Mathf.Sqrt( 2f * JumpHeight * Mathf.Abs(_controller.Parameters.Gravity)));
-            Debug.Log("SetVerticalForce: "+ Mathf.Sqrt(2f * JumpHeight * Mathf.Abs(_controller.Parameters.Gravity)));
             JumpHappenedThisFrame = true;
         }
 
@@ -309,8 +306,6 @@ namespace CometaPrototypes.CharacterController2D
 
         public void JumpStop()
         {
-            Debug.Log("Call JumpStop");
-
             if (!CanJumpStop)
             {
                 return;
