@@ -24,6 +24,13 @@ public class CharacterControllerParameters
     [Tooltip("general speed factor")]
     public float SpeedFactor = 1;
 
+    [Header("Physics2D Interaction [Experimental]")]
+
+    [Tooltip("if set to true, the character will transfer its force to all rigidbodies it collides with horizontally")]
+    public bool Physics2DInteraction = true;
+    [Tooltip("the force applied to the objects the character encounters")]
+    public float Physics2DPushForce = 2.0f;
+
     [Header("Gizmos")]
     [Tooltip("if set to true, will draw the various raycast used by the charactercontroller to detect collisions in scene view if gizmos are active")]
     public bool DrawRaycastsGizmos = true;

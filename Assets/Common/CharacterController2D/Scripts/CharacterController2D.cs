@@ -17,6 +17,12 @@ namespace CometaPrototypes.CharacterController2D
         [Tooltip("The layer mask the platforms are on")]
         public LayerMask PlatformMask;
 
+        [Header("Safe Mode")]
+        [Tooltip("Whether or not to perform additional checks when setting the transform's position. Slightly more expensive in terms of performance, but also safer. ")]
+        public bool SafeSetTransform = false;
+        [Tooltip("if this is true, this controller will set a number of physics settings automatically on init, to ensure they're correct")]
+        public bool AutomaticallySetPhysicsSettings = true;
+
         [Tooltip("gives you the object the character is standing on")]
         public GameObject StandingOn;
         //the object the character was standing on last frame
@@ -24,6 +30,8 @@ namespace CometaPrototypes.CharacterController2D
         //the object the collider the character is standing on
         public Collider2D StandingOnCollider { get; private set; }
         public Vector2 Speed { get { return _speed; } }
+        //the world speed of the characgter
+        public Vector2 WorldSpeed { get { return _worldSpeed; } }
 
         [Header("Raycasting")]
         [Tooltip("the number of ray cast horizontally")]
@@ -34,6 +42,9 @@ namespace CometaPrototypes.CharacterController2D
         public float RayOffsetHorizontal = 0.05f;
         [Tooltip("a small value added to all vertic al raycasts to accomodate for edge cases")]
         public float RayOffsetVertical = 0.05f;
+        [Tooltip("the maximum length of the ray used to detect the distance to the ground")]
+        public float DistanceToTheGroundRayMaximumLength = 100f;
+
 
         [Tooltip("the time (inseconds) since the last time the character was grounded")]
         public float TimeAirborne = 0f;
@@ -58,11 +69,14 @@ namespace CometaPrototypes.CharacterController2D
         private BoxCollider2D _boxCollider;
         private LayerMask _platformMaskSave;
         private LayerMask _raysBelowLayerMaskPlatforms;
+        private int _savedBelowLayer;
         private bool _gravityActive = true;
+        private Collider2D _ignoredCollider = null;
 
         private const float _smallValue = 0.0001f;
 
         private RaycastHit2D[] _belowHitStorage;
+        private RaycastHit2D _distanceToTheGroundRaycast;
 
         private Vector2 _horizontalRayCastFromBottom = Vector2.zero;
         private Vector2 _horizontalRayCastToTop = Vector2.zero;
@@ -79,8 +93,10 @@ namespace CometaPrototypes.CharacterController2D
         private float _boundsWidth;
         private float _boundsHeight;
         private float _distanceToTheGround;
+        private Vector2 _worldSpeed;
 
         private List<RaycastHit2D> _contactList;
+        private bool _shouldComputeNewSpeed = false;
 
         private void Awake()
         {
@@ -95,10 +111,27 @@ namespace CometaPrototypes.CharacterController2D
             _contactList = new List<RaycastHit2D>();
             State = new CharacterController2DState();
 
+            _platformMaskSave = PlatformMask;
+
             _belowHitStorage = new RaycastHit2D[NumberOfVerticalRays];
 
             State.Reset();
             SetRaysParameters();
+
+            //ApplyGravitySettings();
+            ApplyPhysicsSettings();
+        }
+
+        private void ApplyPhysicsSettings()
+        {
+            if (AutomaticallySetPhysicsSettings)
+            {
+                Physics2D.queriesHitTriggers = true;
+                Physics2D.queriesStartInColliders = true;
+                Physics2D.callbacksOnDisable = true;
+                Physics2D.reuseCollisionCallbacks = false;
+                Physics2D.autoSyncTransforms = true;
+            }
         }
 
         public void AddForce(Vector2 force)
@@ -156,6 +189,11 @@ namespace CometaPrototypes.CharacterController2D
 
         private void EveryFrame()
         {
+            if (Time.timeScale == 0f)
+            {
+                return;
+            }
+
             ApplyGravity();
             FrameInitialization();
 
@@ -165,16 +203,61 @@ namespace CometaPrototypes.CharacterController2D
             CastRaysBelow();
 
             MoveTransform();
+
+            SetRaysParameters();
+            ComputeNewSpeed();
+            SetStates();
+            ComputeDistanceToTheGround();
+
+            _externalForce.x = 0f;
+            _externalForce.y = 0f;
+
+            FrameExit();
+
+            _worldSpeed = Speed;
         }
 
         private void FrameInitialization()
         {
+            _contactList.Clear();
+            // we initialize our newposition, witch we'll use in all the next computations
             _newPosition = Speed * DeltaTime;
+
+            //if (Speed.y > 0)
+            //{
+            //    Debug.Log("FrameInitialization, _newPosition: "+_newPosition.ToString("F4")+"Speed: "+Speed.ToString("F4"));
+            //}
+
+            State.WasGroundedLastFrame = State.IsCollidingBelow;
+            StandingOnLastFrame = StandingOn;
+
+            _shouldComputeNewSpeed = true;
+            State.Reset();
+        }
+
+        private void FrameExit()
+        {
+            // on frame exit we put our standing on last frame object back to where it belongs
+            if (StandingOnLastFrame != null)
+            {
+                StandingOnLastFrame.layer = _savedBelowLayer;
+            }
         }
 
         private void MoveTransform()
         {
             _transform.Translate(_newPosition, Space.Self);
+
+            //string moveText = "MoveTransform, newPosition: " + _newPosition.ToString("F4");
+
+            //if (_newPosition.y > 0)
+            //{
+            //    Debug.Log("<color=green>" + moveText + "</color>");
+            //}
+            //else
+            //{
+            //    Debug.Log(moveText);
+            //}
         }
 
         private void ApplyGravity()
@@ -192,7 +275,7 @@ namespace CometaPrototypes.CharacterController2D
 
             if (_gravityActive)
             {
-                _speed.y = _currentGravity * DeltaTime;
+                _speed.y += (_currentGravity) * DeltaTime;
             }
 
             if (_fallSlowFactor != 0)
@@ -203,6 +286,7 @@ namespace CometaPrototypes.CharacterController2D
 
         private void CastRaysBelow()
         {
+            //Debug.Log("CastRaysBelow");
             _friction = 0;
 
             if (_newPosition.y < -_smallValue)
@@ -241,6 +325,16 @@ namespace CometaPrototypes.CharacterController2D
 
             _raysBelowLayerMaskPlatforms = PlatformMask;
 
+            // if what we're standing on is a mid height oneway platform, we turn it into a regular platform for this frame only
+            if (StandingOnLastFrame != null)
+            {
+                _savedBelowLayer = StandingOnLastFrame.layer;
+                //if (MidHeightOneWayPlatformMask.MMContains(StandingOnLastFrame.layer))
+                //{
+                //    StandingOnLastFrame.layer = LayerMask.NameToLayer("Platforms");
+                //}
+            }
+
             float smallestDistance = float.MaxValue;
             int smallestDistanceIndex = 0;
             bool hitConnected = false;
@@ -249,13 +343,18 @@ namespace CometaPrototypes.CharacterController2D
             {
                 Vector2 rayOriginPoint = Vector2.Lerp(_verticalRayCastFromLeft, _verticalRaycastToRight, (float)i/(float)(NumberOfVerticalRays - 1));
 
-                if ((_newPosition.y > 0) && (!State.WasGroundedLastFrame))
-                {
+                //if ((_newPosition.y > 0) && (!State.WasGroundedLastFrame))
+                //{
+                //    //_belowHitStorage[i] = MMDebug.RayCast(rayOriginPoint, -transform.up, rayLength, _raysBelowLayerMaskPlatformsWithoutOneWay, Color.blue, Parameters.DrawRaycastsGizmos);
+                //    _belowHitStorage[i] = MMDebug.RayCast(rayOriginPoint, -transform.up, rayLength, _raysBelowLayerMaskPlatforms, Color.blue, Parameters.DrawRaycastsGizmos);
+                //} else
+                //{
+                //    _belowHitStorage[i] = MMDebug.RayCast(rayOriginPoint, -transform.up, rayLength, _raysBelowLayerMaskPlatforms, Color.blue, Parameters.DrawRaycastsGizmos);
+                //}
 
-                } else
-                {
-                    _belowHitStorage[i] = MMDebug.RayCast(rayOriginPoint, -transform.up, rayLength, _raysBelowLayerMaskPlatforms, Color.blue, Parameters.DrawRaycastsGizmos);
-                }
+                _belowHitStorage[i] = MMDebug.RayCast(rayOriginPoint, -transform.up, rayLength, _raysBelowLayerMaskPlatforms, Color.blue, Parameters.DrawRaycastsGizmos);
+                //Debug.Log("Raycast, rayOriginPoint: "+rayOriginPoint+", direction: "+
+                //    (-_transform.up)+", rayLenght: "+rayLength+", layermask: "+_raysBelowLayerMaskPlatforms.value);
 
                 float distance = MMMaths.DistanceBetweenPointAndLine(_belowHitStorage[smallestDistanceIndex].point, _verticalRayCastFromLeft, _verticalRaycastToRight);
 
@@ -281,6 +380,8 @@ namespace CometaPrototypes.CharacterController2D
                 StandingOn = _belowHitStorage[smallestDistanceIndex].collider.gameObject;
                 StandingOnCollider = _belowHitStorage[smallestDistanceIndex].collider;
 
+                //Debug.Log("<color=cyan>Hit CONNECTED, colliding with : "+StandingOn.name+"</color>");
+
                 State.IsFalling = false;
                 State.IsCollidingBelow = true;
 
@@ -289,6 +390,7 @@ namespace CometaPrototypes.CharacterController2D
                 {
                     _newPosition.y = _speed.y * DeltaTime;
                     State.IsCollidingBelow = false;
+
                 }
                 // if not, we just adjust the position based on the raycast hit
                 else
@@ -312,9 +414,34 @@ namespace CometaPrototypes.CharacterController2D
             }
             else
             {
+                //Debug.Log("<color=red>Hit not connected</color>");
+
                 State.IsCollidingBelow = false;
             }
 
+        }
+
+        //Computes the new speed of the character
+        private void ComputeNewSpeed()
+        {
+            // we compute the new speed
+            if ((DeltaTime > 0) && _shouldComputeNewSpeed)
+            {
+                _speed = _newPosition / DeltaTime;
+            }
+
+            //// we apply our slope speed factor based on the slope's angle
+            //if (State.IsGrounded)
+            //{
+            //    _speed.x *= Parameters.SlopeAngleSpeedFactor.Evaluate(Mathf.Abs(State.BelowSlopeAngle) * Mathf.Sign(_speed.y));
+            //}
+
+            //if (!State.OnAMovingPlatform)
+            //{
+                // we make sure the velocity doesn´t exeed the MaxVelocity specified in the parameters
+                ClampSpeed();
+                ClampExternalForce();
+            //}
         }
 
         private void ClampSpeed()
@@ -327,6 +454,53 @@ namespace CometaPrototypes.CharacterController2D
         {
             _externalForce.x = Mathf.Clamp(_externalForce.x, -Parameters.MaxVelocity.x, Parameters.MaxVelocity.x);
             _externalForce.y = Mathf.Clamp(_externalForce.y, -Parameters.MaxVelocity.y, Parameters.MaxVelocity.y);
+        }
+
+        private void SetStates()
+        {
+            if (!State.WasGroundedLastFrame && State.IsCollidingBelow)
+            {
+                State.JustGotGrounded = true;
+            }
+
+            //if (State.IsCollidingLeft || State.IsCollidingRight || State.IsCollidingBelow || State.IsCollidingAbove)
+            if (State.IsCollidingBelow)
+            {
+                OnCharacterColliderHit();
+            }
+        }
+
+        private void ComputeDistanceToTheGround()
+        {
+            if (DistanceToTheGroundRayMaximumLength <= 0)
+            {
+                return;
+            }
+
+            if (State.IsGrounded)
+            {
+                _distanceToTheGround = 0f;
+                return;
+            }
+
+            //_rayCastOrigin.x = (State.BellowSlopeAngle < 0) ? _boundsBottomLeftCorner.x : _boundsBottomRightCorner.x;
+            _rayCastOrigin.x = _boundsBottomRightCorner.x;
+            _rayCastOrigin.y = _boundsCenter.y;
+
+            _distanceToTheGroundRaycast = MMDebug.RayCast(_rayCastOrigin, -transform.up, DistanceToTheGroundRayMaximumLength, _raysBelowLayerMaskPlatforms, MMColors.CadetBlue, true);
+
+            if (_distanceToTheGroundRaycast)
+            {
+                if (_distanceToTheGroundRaycast.collider == _ignoredCollider)
+                {
+                    _distanceToTheGround = -1f;
+                    return;
+                }
+                _distanceToTheGround = _distanceToTheGroundRaycast.distance - _boundsHeight / 2f;
+            } else
+            {
+                _distanceToTheGround = -1f;
+            }
         }
 
         private void SetRaysParameters()
@@ -372,6 +546,23 @@ namespace CometaPrototypes.CharacterController2D
             else
             {
                 _gravityActive = false;
+            }
+        }
+
+        private void OnCharacterColliderHit()
+        {
+            foreach (RaycastHit2D hit in _contactList)
+            {
+                if (Parameters.Physics2DInteraction)
+                {
+                    Rigidbody2D body = hit.collider.attachedRigidbody;
+                    if (body == null || body.isKinematic || body.bodyType == RigidbodyType2D.Static)
+                    {
+                        return;
+                    }
+                    Vector3 pushDirection = new Vector3(_externalForce.x, 0, 0);
+                    body.velocity = pushDirection.normalized * Parameters.Physics2DPushForce;
+                }
             }
         }
     }
