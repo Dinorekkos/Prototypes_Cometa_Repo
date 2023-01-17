@@ -9,13 +9,18 @@ namespace CometaPrototypes.CharacterController2D
 {
     public class InputManager : MonoBehaviour
     {
+        [Header("Settings")]
+        public string PlayerID = "Player1";
+
         public Input_CharacterController2D InputActions;
+
+        private List<MMInput.IMButton> ButtonList;
 
         [SerializeField] private Vector2 _movement;
         [SerializeField] private bool _jumpPressed;
 
         public Vector2 Movement { get => _movement; private set => _movement = value; }
-        public bool JumpPressed { get => _jumpPressed; private set => _jumpPressed = value; }
+        public MMInput.IMButton JumpButton { get; private set; }
 
         private void Awake()
         {
@@ -30,10 +35,15 @@ namespace CometaPrototypes.CharacterController2D
         private void Initialization()
         {
             InputActions.Player2D.Movement.performed += context => Movement = context.ReadValue<Vector2>();
-            InputActions.Player2D.Jump.performed += context => { OnJumpPerformed(context); };
+
+            //Buttons
+            ButtonList = new List<MMInput.IMButton>();
+
+            ButtonList.Add(JumpButton = new MMInput.IMButton(PlayerID, "Jump", null, null, null));
+            InputActions.Player2D.Jump.performed += context => { BindButton(context, JumpButton); };
         }
 
-        private void OnJumpPerformed(InputAction.CallbackContext context)
+        protected virtual void BindButton(InputAction.CallbackContext context, MMInput.IMButton imButton)
         {
             var control = context.control;
 
@@ -41,13 +51,18 @@ namespace CometaPrototypes.CharacterController2D
             {
                 if (button.wasPressedThisFrame)
                 {
-                    JumpPressed = true;
+                    imButton.State.ChangeState(MMInput.ButtonStates.ButtonDown);
                 }
                 if (button.wasReleasedThisFrame)
                 {
-                    JumpPressed = false;
+                    imButton.State.ChangeState(MMInput.ButtonStates.ButtonUp);
                 }
             }
+        }
+
+        private void LateUpdate()
+        {
+            ProcessButtonStates();
         }
 
         private void OnEnable()
@@ -58,6 +73,21 @@ namespace CometaPrototypes.CharacterController2D
         private void OnDisable()
         {
             InputActions.Disable();
+        }
+
+        private void ProcessButtonStates()
+        {
+            foreach (MMInput.IMButton button in ButtonList)
+            {
+                if (button.State.CurrentState == MMInput.ButtonStates.ButtonDown)
+                {
+                    button.State.ChangeState(MMInput.ButtonStates.ButtonPressed);
+                }
+                if (button.State.CurrentState == MMInput.ButtonStates.ButtonUp)
+                {
+                    button.State.ChangeState(MMInput.ButtonStates.Off);
+                }
+            }
         }
     }
 }
