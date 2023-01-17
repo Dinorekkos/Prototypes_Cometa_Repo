@@ -1,18 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using MoreMountains.Tools;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using MoreMountains.Tools;
 using UnityEngine.InputSystem.Controls;
 
-namespace CometaPrototypes.CharacterController2D
+namespace Prototypes.SlimeParty
 {
-    public class InputManager : MonoBehaviour
+    public class PlayerInput : MonoBehaviour
     {
         [Header("Settings")]
         public string PlayerID = "Player1";
 
-        public Input_CharacterController2D InputActions;
+        public Input_SlimeParty InputActions;
 
         private List<MMInput.IMButton> ButtonList;
 
@@ -23,7 +23,7 @@ namespace CometaPrototypes.CharacterController2D
 
         private void Awake()
         {
-            InputActions = new Input_CharacterController2D();
+            InputActions = new Input_SlimeParty();
         }
 
         private void Start()
@@ -33,13 +33,19 @@ namespace CometaPrototypes.CharacterController2D
 
         private void Initialization()
         {
-            InputActions.Player2D.Movement.performed += context => Movement = context.ReadValue<Vector2>();
+            InputActions.Player.Movement.ApplyBindingOverride(new InputBinding
+            {
+                groups = "",
+                overridePath = "<Keyboar>"
+            });
+
+            InputActions.Player.Movement.performed += context => Movement = context.ReadValue<Vector2>();
 
             //Buttons
             ButtonList = new List<MMInput.IMButton>();
 
             ButtonList.Add(JumpButton = new MMInput.IMButton(PlayerID, "Jump", null, null, null));
-            InputActions.Player2D.Jump.performed += context => { BindButton(context, JumpButton); };
+            InputActions.Player.Jump.performed += context => { BindButton(context, JumpButton); };
         }
 
         protected virtual void BindButton(InputAction.CallbackContext context, MMInput.IMButton imButton)
