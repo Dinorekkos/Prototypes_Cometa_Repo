@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
@@ -19,6 +20,9 @@ namespace StarterAssets
 		[Header("Mouse Cursor Settings")]
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
+
+		[SerializeField] private UnityEvent _punchEvent;
+		[SerializeField] private PlayerPunchBehavior _punchBehavior;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		public void OnMove(InputValue value)
@@ -43,6 +47,11 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+
+		public void OnPunch(InputValue value)
+		{
+			_punchEvent?.Invoke();
+        }
 #endif
 
 
@@ -74,6 +83,16 @@ namespace StarterAssets
 		private void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+		}
+
+		public void OnAnimationEvent(string eventName)
+		{
+			switch (eventName)
+			{
+				case "Punch":
+					_punchBehavior.Punch();
+					break;
+			}
 		}
 	}
 	
