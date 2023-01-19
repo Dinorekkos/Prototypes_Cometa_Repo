@@ -9,7 +9,7 @@ namespace Prototypes.SlimeParty
 {
     public class SlimePartyCharacter : MonoBehaviour
     {
-        public PlayerInput _playerInput;
+        public InputManager _playerInput;
         public CharacterController2D _controller;
 
         [Header("Events")]

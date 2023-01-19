@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
@@ -7,12 +8,10 @@ using UnityEngine.InputSystem.Controls;
 
 namespace Prototypes.SlimeParty
 {
-    public class PlayerInput : MonoBehaviour
+    public class InputManager : MonoBehaviour
     {
         [Header("Settings")]
         public string PlayerID = "Player1";
-
-        public Input_SlimeParty InputActions;
 
         private List<MMInput.IMButton> ButtonList;
 
@@ -21,11 +20,6 @@ namespace Prototypes.SlimeParty
         public Vector2 Movement { get => _movement; private set => _movement = value; }
         public MMInput.IMButton JumpButton { get; private set; }
 
-        private void Awake()
-        {
-            InputActions = new Input_SlimeParty();
-        }
-
         private void Start()
         {
             Initialization();
@@ -33,22 +27,18 @@ namespace Prototypes.SlimeParty
 
         private void Initialization()
         {
-            InputActions.Player.Movement.ApplyBindingOverride(new InputBinding
-            {
-                groups = "",
-                overridePath = "<Keyboar>"
-            });
-
-            InputActions.Player.Movement.performed += context => Movement = context.ReadValue<Vector2>();
-
             //Buttons
             ButtonList = new List<MMInput.IMButton>();
 
             ButtonList.Add(JumpButton = new MMInput.IMButton(PlayerID, "Jump", null, null, null));
-            InputActions.Player.Jump.performed += context => { BindButton(context, JumpButton); };
         }
 
-        protected virtual void BindButton(InputAction.CallbackContext context, MMInput.IMButton imButton)
+        public void OnMovement(InputAction.CallbackContext context)
+        {
+            Movement = context.ReadValue<Vector2>();
+        }
+
+        public void OnJump(InputAction.CallbackContext context)
         {
             var control = context.control;
 
@@ -56,11 +46,12 @@ namespace Prototypes.SlimeParty
             {
                 if (button.wasPressedThisFrame)
                 {
-                    imButton.State.ChangeState(MMInput.ButtonStates.ButtonDown);
+                    JumpButton.State.ChangeState(MMInput.ButtonStates.ButtonDown);
                 }
+
                 if (button.wasReleasedThisFrame)
                 {
-                    imButton.State.ChangeState(MMInput.ButtonStates.ButtonUp);
+                    JumpButton.State.ChangeState(MMInput.ButtonStates.ButtonUp);
                 }
             }
         }
@@ -68,16 +59,6 @@ namespace Prototypes.SlimeParty
         private void LateUpdate()
         {
             ProcessButtonStates();
-        }
-
-        private void OnEnable()
-        {
-            InputActions.Enable();
-        }
-
-        private void OnDisable()
-        {
-            InputActions.Disable();
         }
 
         private void ProcessButtonStates()
