@@ -12,7 +12,7 @@
         [Header("Audio")]
         public AudioSource crashAudioClip;
 
-        private void OnTriggerEnter(Collider other)
+        public void Break()
         {
             wholeCrate.enabled = false;
             boxCollider.enabled = false;

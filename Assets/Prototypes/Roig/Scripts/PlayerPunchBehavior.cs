@@ -1,3 +1,4 @@
+using ArionDigital;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,8 +24,12 @@ public class PlayerPunchBehavior : MonoBehaviour
         foreach (var box in hitColliders)
         {
             Rigidbody rb = box.GetComponent<Rigidbody>();
-            Vector3 breakForce = (rb.transform.position - transform.position).normalized * 2;
+            Vector3 breakForce = (rb.transform.position - transform.position).normalized * Random.Range(2, 20);
             rb.AddForce(breakForce, ForceMode.Impulse);
+            if (box.GetComponent<CrashCrate>() != null)
+            {
+                box.GetComponent<CrashCrate>().Break();
+            }
         }
     }
 
