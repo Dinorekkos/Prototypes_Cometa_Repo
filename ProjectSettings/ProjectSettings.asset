@@ -562,7 +562,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: MOREMOUNTAINS_NICEVIBRATIONS_INSTALLED;STARTER_ASSETS_PACKAGES_CHECKED
+    1: MOREMOUNTAINS_NICEVIBRATIONS_INSTALLED;STARTER_ASSETS_PACKAGES_CHECKED;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -649,7 +649,7 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 2
+  activeInputHandler: 1
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
