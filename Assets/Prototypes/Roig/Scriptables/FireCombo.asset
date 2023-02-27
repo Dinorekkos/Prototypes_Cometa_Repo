@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00e1fb119627791418a7ddd4a8e88f1d, type: 3}
+  m_Name: FireCombo
+  m_EditorClassIdentifier: 
+  _NotesSequence:
+  - {fileID: 11400000, guid: 0f8a8a04063e8bb41af77f44ad566ee4, type: 2}
+  - {fileID: 11400000, guid: 0f8a8a04063e8bb41af77f44ad566ee4, type: 2}
+  - {fileID: 11400000, guid: 7faa703eb6254a94783d22114987227f, type: 2}
