@@ -48,6 +48,8 @@ namespace CometaPrototypes.WorldSim
 
         public void UseCard(int handIndex, Card card)
         {
+            card.UseCard();
+
             //remove card from hand
             hand.RemoveAt(handIndex);
 

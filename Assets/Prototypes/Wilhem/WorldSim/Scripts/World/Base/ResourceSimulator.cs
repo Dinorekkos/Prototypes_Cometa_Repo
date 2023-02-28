@@ -37,11 +37,18 @@ namespace CometaPrototypes.WorldSim
         [SerializeField] private int maxHappinessIncreasePerInterval = 2;
 
         [Header("Debug Info")]
-        [ReadOnly] [SerializeField] private List<Person> people;
+        [ReadOnly] [SerializeField] public List<Person> people;
 
-        [ReadOnly] [SerializeField] private int food;
+        [ReadOnly] [SerializeField] public int food;
         [ReadOnly] [SerializeField] private float timeSinceLastFoodConsumption;
         //[ReadOnly] [SerializeField] private float timeSinceLastFoodHarvest;
+
+        public static ResourceSimulator Instance;
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         private void Start()
         {
@@ -49,7 +56,7 @@ namespace CometaPrototypes.WorldSim
 
             for (int i=0; i < startingPopulation;i++)
             {
-                people.Add(new Person(0, 50)); //Initialize needs and happiness
+                BirthPerson();
             }
 
             food = startingFood;
@@ -142,6 +149,12 @@ namespace CometaPrototypes.WorldSim
         private void Kill(int index)
         {
             people.RemoveAt(index);
+        }
+
+        //Give birth a person with needs and hapiness
+        public void BirthPerson()
+        {
+            people.Add(new Person(0, 50));
         }
 
         //private bool CanHarvestBerries()

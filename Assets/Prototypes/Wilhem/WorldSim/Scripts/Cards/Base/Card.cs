@@ -17,6 +17,8 @@ namespace CometaPrototypes.WorldSim
 
         public abstract string id { get; }
         public abstract int maxDrawCount { get; }
+
+        public abstract void UseCard();
     }
 
     #region FaithCards
@@ -25,6 +27,11 @@ namespace CometaPrototypes.WorldSim
         public override string id => "thegenesis";
 
         public override int maxDrawCount => 1;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.BirthPerson();
+        }
     }
     #endregion
 
