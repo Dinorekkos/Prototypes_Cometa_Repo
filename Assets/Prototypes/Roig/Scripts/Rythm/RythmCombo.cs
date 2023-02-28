@@ -6,8 +6,10 @@ using UnityEngine;
 public class RythmCombo : ScriptableObject
 {
     [SerializeField] private List<RythmNote> _NotesSequence;
+    [SerializeField] private RythmAttack _Attack;
 
     public List<RythmNote> NotesSequence { get => _NotesSequence; }
+    public RythmAttack Attack { get => _Attack; }
 
     public bool IsComboStillGoing(int index, RythmNote note)
     {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class RythmComboDetector : MonoBehaviour
@@ -11,6 +12,7 @@ public class RythmComboDetector : MonoBehaviour
     [SerializeField] private AudioSource _NoteAudioSource;
     [SerializeField] private RythmNote _BlueNote;
     [SerializeField] private RythmNote _RedNote;
+    [SerializeField] private UnityEvent<RythmCombo> _OnComboMade;
 
     private List<RythmCombo> _AvailableCombos = new List<RythmCombo>();
     private int _NoteIndex = 0;
@@ -40,6 +42,7 @@ public class RythmComboDetector : MonoBehaviour
 
     public void OnNotePlayed(RythmNote note)
     {
+        bool foundCombo = false;
         PlayNoteSound(note);
         for (int i = _AvailableCombos.Count - 1; i >= 0; i--)
         {
@@ -47,8 +50,9 @@ public class RythmComboDetector : MonoBehaviour
             {
                 if (_AvailableCombos[i].IsComboFinished(_CurrentNotes))
                 {
-                    Debug.Log("Holaaa");
+                    _OnComboMade?.Invoke(_AvailableCombos[i]);
                     ResetCombo();
+                    foundCombo = true;
                     break;
                 }
             }
@@ -57,9 +61,12 @@ public class RythmComboDetector : MonoBehaviour
                 _AvailableCombos.Remove(_AvailableCombos[i]);
             }
         }
-        _NoteIndex++;
-        StopCoroutine("ComboTimerCoroutine");
-        StartCoroutine("ComboTimerCoroutine");
+        if (!foundCombo)
+        {
+            _NoteIndex++;
+            StopCoroutine("ComboTimerCoroutine");
+            StartCoroutine("ComboTimerCoroutine");
+        }
     }
 
     private void PlayNoteSound(RythmNote note)
