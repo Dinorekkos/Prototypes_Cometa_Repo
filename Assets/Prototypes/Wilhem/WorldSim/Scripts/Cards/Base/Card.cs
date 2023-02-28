@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CometaPrototypes.WorldSim
 {
-    public abstract class Card : ScriptableObject
+    public abstract class Card
     {
         public enum CardType
         {
@@ -13,10 +13,10 @@ namespace CometaPrototypes.WorldSim
         }
 
         public CardType type;
+        public List<Card> cardsToUnlock;
 
         public abstract string id { get; }
         public abstract int maxDrawCount { get; }
-        
     }
 
     #region FaithCards
@@ -25,7 +25,6 @@ namespace CometaPrototypes.WorldSim
         public override string id => "thegenesis";
 
         public override int maxDrawCount => 1;
-
     }
     #endregion
 
