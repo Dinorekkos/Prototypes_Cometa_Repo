@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WaterMissle
       objectReference: {fileID: 0}
+    - target: {fileID: 522715586817834328, guid: 5177cb4c358e0bc49b0d34c9f3b1347f, type: 3}
+      propertyPath: _ElementalType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 522715586817834329, guid: 5177cb4c358e0bc49b0d34c9f3b1347f, type: 3}
       propertyPath: m_RootOrder
       value: 0

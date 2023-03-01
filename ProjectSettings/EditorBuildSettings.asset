@@ -5,8 +5,14 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/Prototypes/Roig/Scenes/Destroyer_Scene1.unity
+    guid: 389a9d35c018e524b83311b6e6599c4d
+  - enabled: 1
+    path: Assets/Prototypes/Roig/Scenes/RythmGame.unity
+    guid: c16009f7bc36543479eaed8ccbea0e9e
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 6c7b991463a254f2583139d1773f35a5, type: 2}
