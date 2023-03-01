@@ -48,7 +48,24 @@ namespace CometaPrototypes.WorldSim
 
         public void UseCard(int handIndex, Card card)
         {
+            if (card.type == Card.CardType.Faith)
+            {
+                if (card.cost > (int)ResourceSimulator.Instance.faithPoints)
+                    return;
+
+                ResourceSimulator.Instance.faithPoints -= card.cost;
+            }
+
+            if (card.type == Card.CardType.Investigation)
+            {
+                if (card.cost > (int)ResourceSimulator.Instance.investigationPoints)
+                    return;
+
+                ResourceSimulator.Instance.investigationPoints -= card.cost;
+            }
+
             card.UseCard();
+            
 
             //remove card from hand
             hand.RemoveAt(handIndex);

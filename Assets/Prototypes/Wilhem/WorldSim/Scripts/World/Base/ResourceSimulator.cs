@@ -25,6 +25,9 @@ namespace CometaPrototypes.WorldSim
         [SerializeField] private int startingBerryTrees = 0;
         [SerializeField] private int startingTrees = 0;
 
+        [SerializeField] private float startingPersonFaithPerSecond = 0.2f;
+        [SerializeField] private float startingPersonInvestigationPerSecond = 0.1f;
+
         [Header("Food Consumption")]
         [SerializeField] private float foodConsumptionInterval = 5.0f;
         [SerializeField] private int hungerIncreasePerInterval = 2;
@@ -49,6 +52,12 @@ namespace CometaPrototypes.WorldSim
         [ReadOnly] [SerializeField] public int wood;
         [ReadOnly] [SerializeField] public int berryTrees;
         [ReadOnly] [SerializeField] public int trees;
+
+        [ReadOnly] [SerializeField] public float faithPoints;
+        [ReadOnly] [SerializeField] public float investigationPoints;
+
+        [ReadOnly] [SerializeField] public float personFaithPerSecond;
+        [ReadOnly] [SerializeField] public float personInvestigationPerSecond;
 
         [ReadOnly] [SerializeField] private float timeSinceLastFoodConsumption;
         [ReadOnly] [SerializeField] private float timeSinceLastBerryHarvest;
@@ -75,6 +84,9 @@ namespace CometaPrototypes.WorldSim
 
             berryTrees = startingBerryTrees;
             trees = startingBerryTrees;
+
+            personFaithPerSecond = startingPersonFaithPerSecond;
+            personInvestigationPerSecond = startingPersonInvestigationPerSecond;
 
             timeSinceLastFoodConsumption = 0.0f;
             timeSinceLastBerryHarvest = 0.0f;
@@ -130,6 +142,9 @@ namespace CometaPrototypes.WorldSim
                     }
                 }
             }
+
+            IncreaseFaith();
+            IncreaseInvestigation();
         }
 
         private void IncreaseHunger(int index)
@@ -196,6 +211,16 @@ namespace CometaPrototypes.WorldSim
             int obtainedWood = Random.Range(minWoodPerTree, maxWoodPerTree + 1);
             trees--;
             wood += obtainedWood;
+        }
+
+        private void IncreaseFaith()
+        {
+            faithPoints += personFaithPerSecond * Time.deltaTime * people.Count;
+        }
+
+        private void IncreaseInvestigation()
+        {
+            investigationPoints += personInvestigationPerSecond * Time.deltaTime * people.Count;
         }
     }
 

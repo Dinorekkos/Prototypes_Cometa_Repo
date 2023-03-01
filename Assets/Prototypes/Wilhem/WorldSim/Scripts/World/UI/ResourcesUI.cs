@@ -11,6 +11,9 @@ namespace CometaPrototypes.WorldSim {
         public Text foodText;
         public Text woodText;
 
+        public Text faithText;
+        public Text investigationText;
+
         public Text berriesText;
         public Text treesText;
 
@@ -42,6 +45,9 @@ namespace CometaPrototypes.WorldSim {
             populationText.text = "Population: " + ResourceSimulator.Instance.people.Count;
             foodText.text = "Food: " + ResourceSimulator.Instance.food;
             woodText.text = "Wood: " + ResourceSimulator.Instance.wood;
+
+            faithText.text = "Faith: "+(int)ResourceSimulator.Instance.faithPoints;
+            investigationText.text = "Investigation: "+(int)ResourceSimulator.Instance.investigationPoints;
 
             berriesText.text = "Berries: " + ResourceSimulator.Instance.berryTrees;
             treesText.text = "Trees: " + ResourceSimulator.Instance.trees;
