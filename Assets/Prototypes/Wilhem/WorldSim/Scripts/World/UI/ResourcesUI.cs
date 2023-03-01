@@ -9,8 +9,11 @@ namespace CometaPrototypes.WorldSim {
     {
         public Text populationText;
         public Text foodText;
+        public Text woodText;
 
-        public DataForPool data = default;
+        public Text berriesText;
+        public Text treesText;
+
         public SimplePooling personUIPooling;
 
         private float lastUpdateTime = 0f;
@@ -38,6 +41,10 @@ namespace CometaPrototypes.WorldSim {
         {
             populationText.text = "Population: " + ResourceSimulator.Instance.people.Count;
             foodText.text = "Food: " + ResourceSimulator.Instance.food;
+            woodText.text = "Wood: " + ResourceSimulator.Instance.wood;
+
+            berriesText.text = "Berries: " + ResourceSimulator.Instance.berryTrees;
+            treesText.text = "Trees: " + ResourceSimulator.Instance.trees;
 
             List<Person> people = ResourceSimulator.Instance.people;
 

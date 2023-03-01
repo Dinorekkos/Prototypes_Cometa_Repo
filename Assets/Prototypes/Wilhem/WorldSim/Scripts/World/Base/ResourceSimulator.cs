@@ -8,12 +8,10 @@ namespace CometaPrototypes.WorldSim
     public class Person
     {
         public int hunger;
-        //public int happiness;
 
         public Person(int hunger, int happiness)
         {
             this.hunger = hunger;
-            //this.happiness = happiness;
         }
     }
 
@@ -22,26 +20,39 @@ namespace CometaPrototypes.WorldSim
         [Header("Starting Values")]
         [SerializeField] private int startingPopulation = 2;
         [SerializeField] private int startingFood = 0;
+        [SerializeField] private int startingWood = 0;
+
+        [SerializeField] private int startingBerryTrees = 0;
+        [SerializeField] private int startingTrees = 0;
 
         [Header("Food Consumption")]
         [SerializeField] private float foodConsumptionInterval = 5.0f;
         [SerializeField] private int hungerIncreasePerInterval = 2;
 
-        //[Header("Berry Harvesting")]
-        //[SerializeField] private float harvestRatio = 0.5f;
-        //[SerializeField] private float foodHarvestInterval = 10.0f;
-        //[SerializeField, Min(1)] private int minBerriesPerTree = 3;
-        //[SerializeField, Min(1)] private int maxBerriesPerTree = 4;
+        [Header("Bery Harvesting")]
+        [SerializeField] private float berryHarvestInterval = 10f;
+        [SerializeField, Min(1)] private int minBerriesPerTree = 3;
+        [SerializeField, Min(1)] private int maxBerriesPerTree = 4;
 
-        [Header("Happiness")]
-        [SerializeField] private int maxHappinessIncreasePerInterval = 2;
+        [Header("Tree Felling")]
+        [SerializeField] private float treeCuttingInterval = 15f;
+        [SerializeField, Min(1)] private int minWoodPerTree = 3;
+        [SerializeField, Min(1)] private int maxWoodPerTree = 4;
+
+        [Header("Investigations")]
+        [ReadOnly] [SerializeField] public bool discoveredAxe = false;
 
         [Header("Debug Info")]
         [ReadOnly] [SerializeField] public List<Person> people;
 
         [ReadOnly] [SerializeField] public int food;
+        [ReadOnly] [SerializeField] public int wood;
+        [ReadOnly] [SerializeField] public int berryTrees;
+        [ReadOnly] [SerializeField] public int trees;
+
         [ReadOnly] [SerializeField] private float timeSinceLastFoodConsumption;
-        //[ReadOnly] [SerializeField] private float timeSinceLastFoodHarvest;
+        [ReadOnly] [SerializeField] private float timeSinceLastBerryHarvest;
+        [ReadOnly] [SerializeField] private float timeSinceLastTreeCutting;
 
         public static ResourceSimulator Instance;
 
@@ -60,8 +71,13 @@ namespace CometaPrototypes.WorldSim
             }
 
             food = startingFood;
+            wood = startingWood;
+
+            berryTrees = startingBerryTrees;
+            trees = startingBerryTrees;
+
             timeSinceLastFoodConsumption = 0.0f;
-            //timeSinceLastFoodHarvest = 0.0f;
+            timeSinceLastBerryHarvest = 0.0f;
         }
 
         private void Update()
@@ -81,12 +97,6 @@ namespace CometaPrototypes.WorldSim
                     }
                     else
                     {
-                        //people[i].happiness -= 5;
-                        //if (people[i].happiness < 0)
-                        //{
-                        //    people[i].happiness = 0;
-                        //}
-
                         if (CanDie(i))
                         {
                             Kill(i);
@@ -95,24 +105,31 @@ namespace CometaPrototypes.WorldSim
                 }
             }
 
-            //// Update time since last food harvest and check if berries can be harvested
-            //timeSinceLastFoodHarvest += Time.deltaTime;
+            // Update time since last berry harvest and check if berries can be harvested
+            timeSinceLastBerryHarvest += Time.deltaTime;
 
-            //if (timeSinceLastFoodHarvest >= foodHarvestInterval)
-            //{
-            //    timeSinceLastFoodHarvest -= foodHarvestInterval;
-            //    if (CanHarvestBerries())
-            //    {
-            //        HarvestBerries();
-            //    }
-            //}
+            if (timeSinceLastBerryHarvest >= berryHarvestInterval)
+            {
+                timeSinceLastBerryHarvest -= berryHarvestInterval;
+                if (CanHarvestBerries())
+                {
+                    HarvestBerries();
+                }
+            }
 
-            //// Update happiness
-            //for (int i = 0; i < people.Count; i++)
-            //{
-            //    IncreaseHappiness(i);
-            //}
+            if (discoveredAxe)
+            {
+                timeSinceLastTreeCutting += Time.deltaTime;
 
+                if (timeSinceLastTreeCutting >= treeCuttingInterval)
+                {
+                    timeSinceLastTreeCutting -= treeCuttingInterval;
+                    if (CanCutTrees())
+                    {
+                        CutTrees();
+                    }
+                }
+            }
         }
 
         private void IncreaseHunger(int index)
@@ -126,7 +143,7 @@ namespace CometaPrototypes.WorldSim
 
         private bool CanEat(int index)
         {
-            int necessaryHunger = Random.Range(people[index].hunger, 100);
+            int necessaryHunger = Random.Range(people[index].hunger, 40);
             return food > 0 && people[index].hunger >= necessaryHunger;
         }
 
@@ -157,30 +174,29 @@ namespace CometaPrototypes.WorldSim
             people.Add(new Person(0, 50));
         }
 
-        //private bool CanHarvestBerries()
-        //{
-        //    return food < startingPopulation * 2;
-        //}
+        private bool CanHarvestBerries()
+        {
+            return berryTrees > 0;
+        }
 
-        //private void HarvestBerries()
-        //{
-        //    int berries = 0;
-        //    for (int i = 0; i < startingPopulation; i++)
-        //    {
-        //        int berriesPerTree = Random.Range(minBerriesPerTree, maxBerriesPerTree + 1);
-        //        berries += (int)(harvestRatio * berriesPerTree);
-        //    }
-        //    food += berries;
-        //}
+        private void HarvestBerries()
+        {
+            int harvestedBerries = Random.Range(minBerriesPerTree, maxBerriesPerTree + 1);
+            berryTrees--;
+            food += harvestedBerries;
+        }
 
-        //private void IncreaseHappiness(int index)
-        //{
-        //    people[index].happiness += Random.Range(0, maxHappinessIncreasePerInterval + 1);
-        //    if (people[index].happiness > 100)
-        //    {
-        //        people[index].happiness = 100;
-        //    }
-        //}
+        private bool CanCutTrees()
+        {
+            return trees > 0;
+        }
+
+        private void CutTrees()
+        {
+            int obtainedWood = Random.Range(minWoodPerTree, maxWoodPerTree + 1);
+            trees--;
+            wood += obtainedWood;
+        }
     }
 
 }

@@ -12,6 +12,7 @@ namespace CometaPrototypes.WorldSim
             Investigation
         }
 
+        public string title;
         public CardType type;
         public List<Card> cardsToUnlock;
 
@@ -33,9 +34,43 @@ namespace CometaPrototypes.WorldSim
             ResourceSimulator.Instance.BirthPerson();
         }
     }
+
+    public class BlessingWithBerries : Card
+    {
+        public override string id => "blessing_berries";
+
+        public override int maxDrawCount => 5;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.berryTrees++;
+        }
+    }
+
+    public class BlessingWithTrees : Card
+    {
+        public override string id => "blessing_trees";
+
+        public override int maxDrawCount => 5;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.trees++;
+        }
+    }
     #endregion
 
     #region InvestigationCards
+    public class DiscoveryAxe : Card
+    {
+        public override string id => "discoveryAxe";
 
+        public override int maxDrawCount => 1;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.discoveredAxe = true;
+        }
+    }
     #endregion
 }
