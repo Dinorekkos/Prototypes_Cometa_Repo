@@ -53,7 +53,12 @@ namespace CometaPrototypes.WorldSim
                 if (card.cost > (int)ResourceSimulator.Instance.faithPoints)
                     return;
 
+                //remove cost
                 ResourceSimulator.Instance.faithPoints -= card.cost;
+
+                //balance faith/investigation per second
+                ResourceSimulator.Instance.personFaithPerSecond += 0.02f;
+                ResourceSimulator.Instance.personInvestigationPerSecond += -0.02f;
             }
 
             if (card.type == Card.CardType.Investigation)
@@ -61,7 +66,12 @@ namespace CometaPrototypes.WorldSim
                 if (card.cost > (int)ResourceSimulator.Instance.investigationPoints)
                     return;
 
+                //remove cost
                 ResourceSimulator.Instance.investigationPoints -= card.cost;
+
+                //balance faith/investigation per second
+                ResourceSimulator.Instance.personFaithPerSecond += -0.1f;
+                ResourceSimulator.Instance.personInvestigationPerSecond += 0.1f;
             }
 
             card.UseCard();

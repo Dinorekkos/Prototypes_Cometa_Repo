@@ -34,11 +34,7 @@ namespace CometaPrototypes.WorldSim {
                 }
             }
 
-            if (CardsManager.Instance.unlockedCards.Count > 0)
-            {
-
-            }
-            drawButton.interactable = (CardsManager.Instance.unlockedCards.Count > 0);
+            drawButton.interactable = (CardsManager.Instance.unlockedCards.Count > 0 && handIds.Count <5);
         }
 
         public void DrawCard()

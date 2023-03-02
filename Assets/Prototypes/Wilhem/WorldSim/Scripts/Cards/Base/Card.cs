@@ -38,11 +38,25 @@ namespace CometaPrototypes.WorldSim
         }
     }
 
+    public class TheGiftOfLife : Card
+    {
+        public override string id => "giftoflife";
+
+        public override int maxDrawCount => 3;
+
+        public override int cost => 15;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.BirthPerson();
+        }
+    }
+
     public class BlessingWithBerries : Card
     {
         public override string id => "blessing_berries";
 
-        public override int maxDrawCount => 10;
+        public override int maxDrawCount => 5;
 
         public override int cost => 10;
 
@@ -56,7 +70,7 @@ namespace CometaPrototypes.WorldSim
     {
         public override string id => "blessing_trees";
 
-        public override int maxDrawCount => 5;
+        public override int maxDrawCount => 3;
 
         public override int cost => 10;
 
@@ -74,11 +88,67 @@ namespace CometaPrototypes.WorldSim
 
         public override int maxDrawCount => 1;
 
-        public override int cost => 30;
+        public override int cost => 15;
 
         public override void UseCard()
         {
             ResourceSimulator.Instance.discoveredAxe = true;
+        }
+    }
+
+    public class TheArtOfSowing : Card
+    {
+        public override string id => "artofsowing";
+
+        public override int maxDrawCount => 1;
+
+        public override int cost => 15;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.unlockedTheArtOfSowing = true;
+        }
+    }
+
+    public class TheArboristWay : Card
+    {
+        public override string id => "arboristway";
+
+        public override int maxDrawCount => 1;
+
+        public override int cost => 15;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.unlockedTheArboristWay = true;
+        }
+    }
+
+    public class DiscoveryFarm : Card
+    {
+        public override string id => "discoveryFarm";
+
+        public override int maxDrawCount => 1;
+
+        public override int cost => 25;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.discoveredFarm = true;
+        }
+    }
+
+    public class DiscoveryHouse : Card
+    {
+        public override string id => "discoveryHouse";
+
+        public override int maxDrawCount => 1;
+
+        public override int cost => 20;
+
+        public override void UseCard()
+        {
+            ResourceSimulator.Instance.discoveredHouse = true;
         }
     }
     #endregion

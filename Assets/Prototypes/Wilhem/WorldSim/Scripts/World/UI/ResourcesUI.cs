@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ManagerPooling;
+using System;
 
 namespace CometaPrototypes.WorldSim {
     public class ResourcesUI : MonoBehaviour
@@ -16,6 +17,8 @@ namespace CometaPrototypes.WorldSim {
 
         public Text berriesText;
         public Text treesText;
+
+        public Text farmsText;
 
         public SimplePooling personUIPooling;
 
@@ -42,15 +45,20 @@ namespace CometaPrototypes.WorldSim {
 
         private void UpdateUI()
         {
-            populationText.text = "Population: " + ResourceSimulator.Instance.people.Count;
+            populationText.text = "Population: " + ResourceSimulator.Instance.people.Count+" / "+ResourceSimulator.Instance.maxPopulation;
             foodText.text = "Food: " + ResourceSimulator.Instance.food;
             woodText.text = "Wood: " + ResourceSimulator.Instance.wood;
 
-            faithText.text = "Faith: "+(int)ResourceSimulator.Instance.faithPoints;
-            investigationText.text = "Investigation: "+(int)ResourceSimulator.Instance.investigationPoints;
+            faithText.text = "Faith: "+(int)ResourceSimulator.Instance.faithPoints +Environment.NewLine+
+                "+"+ResourceSimulator.Instance.totalFaithPerSecond.ToString("F2")+" faith/s";
+
+            investigationText.text = "Investigation: "+(int)ResourceSimulator.Instance.investigationPoints+Environment.NewLine+
+                "+"+ResourceSimulator.Instance.totalInvestigationPerSecond.ToString("F2")+" inv/s";
 
             berriesText.text = "Berries: " + ResourceSimulator.Instance.berryTrees;
             treesText.text = "Trees: " + ResourceSimulator.Instance.trees;
+
+            farmsText.text = "Farms: "+ResourceSimulator.Instance.farms;
 
             List<Person> people = ResourceSimulator.Instance.people;
 
@@ -70,6 +78,7 @@ namespace CometaPrototypes.WorldSim {
             for (int i= people.Count; i < peopleSpawnedList.Count; i++)
             {
                 personUIPooling.BackToPool(peopleSpawnedList[i].gameObject);
+                peopleSpawnedList.RemoveAt(peopleSpawnedList.Count - 1);
             }
         }
     }

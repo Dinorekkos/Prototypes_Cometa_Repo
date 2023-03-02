@@ -235,7 +235,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 10.590417}
-  m_SizeDelta: {x: 0, y: 487.9376}
+  m_SizeDelta: {x: -475.8129, y: 487.9376}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &60830477
 MonoBehaviour:
@@ -501,6 +501,7 @@ RectTransform:
   - {fileID: 135440889}
   - {fileID: 585550755}
   - {fileID: 284601799}
+  - {fileID: 1960902166}
   - {fileID: 2020956099}
   - {fileID: 937014658}
   m_Father: {fileID: 2045372696}
@@ -508,8 +509,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -89.14145}
-  m_SizeDelta: {x: 0, y: 178.2829}
+  m_AnchoredPosition: {x: 0, y: -422.21042}
+  m_SizeDelta: {x: 0, y: 844.4209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &173000687
 MonoBehaviour:
@@ -1425,12 +1426,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingPopulation: 0
+  startingMaxPopulation: 0
   startingFood: 0
   startingWood: 0
   startingBerryTrees: 0
   startingTrees: 0
-  startingPersonFaithPerSecond: 1
-  startingPersonInvestigationPerSecond: 0.5
+  startingPersonFaithPerSecond: 0.5
+  startingPersonInvestigationPerSecond: 0.2
+  maxPopulation: 0
+  birthInterval: 30
+  birthsByPersonPerInterval: 0.5
   foodConsumptionInterval: 1
   hungerIncreasePerInterval: 2
   berryHarvestInterval: 10
@@ -1439,19 +1444,28 @@ MonoBehaviour:
   treeCuttingInterval: 15
   minWoodPerTree: 3
   maxWoodPerTree: 4
+  buildFarmInterval: 20
+  farmProductionInterval: 15
+  minFoodPerFarm: 3
+  maxFoodPerFarm: 5
   discoveredAxe: 0
+  discoveredFarm: 0
   people: []
   food: 0
   wood: 0
   berryTrees: 0
   trees: 0
+  farms: 0
   faithPoints: 0
   investigationPoints: 0
   personFaithPerSecond: 0
   personInvestigationPerSecond: 0
+  timeSinceLastBirth: 0
   timeSinceLastFoodConsumption: 0
   timeSinceLastBerryHarvest: 0
   timeSinceLastTreeCutting: 0
+  timeSinceLastFarmBuilt: 0
+  timeSinceLastFarmProduction: 0
 --- !u!4 &752804107
 Transform:
   m_ObjectHideFlags: 0
@@ -1609,12 +1623,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 173000686}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1179, y: -119}
-  m_SizeDelta: {x: 400, y: 57.9035}
+  m_AnchoredPosition: {x: 1179, y: -224}
+  m_SizeDelta: {x: 400, y: 109.19}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &937014659
 MonoBehaviour:
@@ -1649,7 +1663,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Investigation: 0'
+  m_Text: 'Investigation: 0
+
+    +0.2 inv/s'
 --- !u!222 &937014660
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2655,6 +2671,85 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1960902165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1960902166}
+  - component: {fileID: 1960902168}
+  - component: {fileID: 1960902167}
+  m_Layer: 5
+  m_Name: FarmsText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1960902166
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960902165}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 173000686}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 867, y: -60}
+  m_SizeDelta: {x: 400, y: 57.9035}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1960902167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960902165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 45
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 4
+    m_MaxSize: 45
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Farms: 0'
+--- !u!222 &1960902168
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960902165}
+  m_CullTransparentMesh: 1
 --- !u!1 &1993222903
 GameObject:
   m_ObjectHideFlags: 0
@@ -2730,12 +2825,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 173000686}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1179, y: -57.90348}
-  m_SizeDelta: {x: 400, y: 57.9035}
+  m_AnchoredPosition: {x: 1179, y: -112}
+  m_SizeDelta: {x: 400, y: 109.19}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &2020956100
 MonoBehaviour:
@@ -2770,7 +2865,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Faith: 0'
+  m_Text: "Faith: 0 \n+0.5 faith/s"
 --- !u!222 &2020956101
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2836,6 +2931,7 @@ MonoBehaviour:
   investigationText: {fileID: 937014659}
   berriesText: {fileID: 585550756}
   treesText: {fileID: 284601800}
+  farmsText: {fileID: 1960902167}
   personUIPooling: {fileID: 488913449}
 --- !u!1001 &1850902679272891016
 PrefabInstance:

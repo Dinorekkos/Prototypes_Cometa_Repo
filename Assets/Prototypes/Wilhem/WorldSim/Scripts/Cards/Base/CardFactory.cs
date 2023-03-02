@@ -19,10 +19,21 @@ namespace CometaPrototypes.WorldSim
                 //Faith
                 CreateBlessingWithBerriesCard(),
                 CreateBlessingWithTreesCard(),
+                CreateTheGiftOfLifeCard(),
 
                 //Investigation
                 CreateDiscoveryAxeCard()
             };
+
+            return card;
+        }
+
+        public static TheGiftOfLife CreateTheGiftOfLifeCard()
+        {
+            TheGiftOfLife card = new TheGiftOfLife();
+
+            card.title = "The Gift of Life";
+            card.type = Card.CardType.Faith;
 
             return card;
         }
@@ -34,6 +45,11 @@ namespace CometaPrototypes.WorldSim
             card.title = "Blessing With Berries";
             card.type = Card.CardType.Faith;
 
+            card.cardsToUnlock = new List<Card>()
+            {
+                CreateTheArtOfSowingCard()
+            };
+
             return card;
         }
 
@@ -43,6 +59,11 @@ namespace CometaPrototypes.WorldSim
 
             card.title = "Blessing With Trees";
             card.type = Card.CardType.Faith;
+
+            card.cardsToUnlock = new List<Card>()
+            {
+                CreateTheArboristWayCard()
+            };
 
             return card;
         }
@@ -54,6 +75,53 @@ namespace CometaPrototypes.WorldSim
             DiscoveryAxe card = new DiscoveryAxe();
 
             card.title = "Discovery Axe";
+            card.type = Card.CardType.Investigation;
+
+            card.cardsToUnlock = new List<Card>()
+            {
+                CreateDiscoveryFarmCard(),
+                CreateDiscoveryHouseCard()
+            };
+
+            return card;
+        }
+
+        public static TheArtOfSowing CreateTheArtOfSowingCard()
+        {
+            TheArtOfSowing card = new TheArtOfSowing();
+
+            card.title = "The Art of Sowing";
+            card.type = Card.CardType.Investigation;
+
+
+            return card;
+        }
+
+        public static TheArboristWay CreateTheArboristWayCard()
+        {
+            TheArboristWay card = new TheArboristWay();
+
+            card.title = "The Arborist Way";
+            card.type = Card.CardType.Investigation;
+
+            return card;
+        }
+
+        public static DiscoveryFarm CreateDiscoveryFarmCard()
+        {
+            DiscoveryFarm card = new DiscoveryFarm();
+
+            card.title = "Discovery Farm";
+            card.type = Card.CardType.Investigation;
+
+            return card;
+        }
+
+        public static DiscoveryHouse CreateDiscoveryHouseCard()
+        {
+            DiscoveryHouse card = new DiscoveryHouse();
+
+            card.title = "Discovery House";
             card.type = Card.CardType.Investigation;
 
             return card;

@@ -13,12 +13,19 @@ namespace CometaPrototypes.WorldSim
         {
             this.hunger = hunger;
         }
+
+        public bool CanDie()
+        {
+            return (this.hunger >= 100);
+        }
     }
 
     public class ResourceSimulator : MonoBehaviour
     {
         [Header("Starting Values")]
         [SerializeField] private int startingPopulation = 2;
+        [SerializeField] private int startingMaxPopulation = 0;
+
         [SerializeField] private int startingFood = 0;
         [SerializeField] private int startingWood = 0;
 
@@ -27,6 +34,11 @@ namespace CometaPrototypes.WorldSim
 
         [SerializeField] private float startingPersonFaithPerSecond = 0.2f;
         [SerializeField] private float startingPersonInvestigationPerSecond = 0.1f;
+
+        [Header("Population")]
+        [ReadOnly] [SerializeField] public int maxPopulation;
+        [SerializeField] private float birthInterval = 30f;
+        [SerializeField] private float birthsByPersonPerInterval = 0.5f;
 
         [Header("Food Consumption")]
         [SerializeField] private float foodConsumptionInterval = 5.0f;
@@ -38,12 +50,34 @@ namespace CometaPrototypes.WorldSim
         [SerializeField, Min(1)] private int maxBerriesPerTree = 4;
 
         [Header("Tree Felling")]
-        [SerializeField] private float treeCuttingInterval = 15f;
+        [SerializeField] private float treeCuttingInterval = 10f;
         [SerializeField, Min(1)] private int minWoodPerTree = 3;
         [SerializeField, Min(1)] private int maxWoodPerTree = 4;
 
+        [Header("Farm Building")]
+        [SerializeField] private float buildFarmInterval = 20f;
+
+        [Header("House Building")]
+        [SerializeField] private float buildHouseInterval = 20f;
+        [SerializeField] private int populationPerHouse = 4;
+
+        [Header("Farm Production")]
+        [SerializeField] private float farmProductionInterval = 15f;
+        [SerializeField, Min(1)] private int minFoodPerFarm = 3;
+        [SerializeField, Min(1)] private int maxFoodPerFarm = 5;
+
+        [Header("The Art of Sowing")]
+        [SerializeField] private float plantBerryInterval = 20f;
+
+        [Header("The Arborist Way")]
+        [SerializeField] private float plantTreeInterval = 30f;
+
         [Header("Investigations")]
         [ReadOnly] [SerializeField] public bool discoveredAxe = false;
+        [ReadOnly] [SerializeField] public bool discoveredFarm = false;
+        [ReadOnly] [SerializeField] public bool discoveredHouse = false;
+        [ReadOnly] [SerializeField] public bool unlockedTheArtOfSowing = false;
+        [ReadOnly] [SerializeField] public bool unlockedTheArboristWay = false;
 
         [Header("Debug Info")]
         [ReadOnly] [SerializeField] public List<Person> people;
@@ -52,6 +86,8 @@ namespace CometaPrototypes.WorldSim
         [ReadOnly] [SerializeField] public int wood;
         [ReadOnly] [SerializeField] public int berryTrees;
         [ReadOnly] [SerializeField] public int trees;
+        [ReadOnly] [SerializeField] public int farms;
+        [ReadOnly] [SerializeField] public int houses;
 
         [ReadOnly] [SerializeField] public float faithPoints;
         [ReadOnly] [SerializeField] public float investigationPoints;
@@ -59,9 +95,15 @@ namespace CometaPrototypes.WorldSim
         [ReadOnly] [SerializeField] public float personFaithPerSecond;
         [ReadOnly] [SerializeField] public float personInvestigationPerSecond;
 
+        [ReadOnly] [SerializeField] private float timeSinceLastBirth;
         [ReadOnly] [SerializeField] private float timeSinceLastFoodConsumption;
         [ReadOnly] [SerializeField] private float timeSinceLastBerryHarvest;
         [ReadOnly] [SerializeField] private float timeSinceLastTreeCutting;
+        [ReadOnly] [SerializeField] private float timeSinceLastFarmBuilt;
+        [ReadOnly] [SerializeField] private float timeSinceLastFarmProduction;
+        [ReadOnly] [SerializeField] private float timeSinceLastHouseBuilt;
+        [ReadOnly] [SerializeField] private float timeSinceLastBerryPlanted;
+        [ReadOnly] [SerializeField] private float timeSinceLastTreePlanted;
 
         public static ResourceSimulator Instance;
 
@@ -78,12 +120,16 @@ namespace CometaPrototypes.WorldSim
             {
                 BirthPerson();
             }
+            maxPopulation = startingMaxPopulation;
 
             food = startingFood;
             wood = startingWood;
 
             berryTrees = startingBerryTrees;
             trees = startingBerryTrees;
+
+            farms = 0;
+            houses = 0;
 
             personFaithPerSecond = startingPersonFaithPerSecond;
             personInvestigationPerSecond = startingPersonInvestigationPerSecond;
@@ -94,52 +140,147 @@ namespace CometaPrototypes.WorldSim
 
         private void Update()
         {
-            // Update time since last food consumption and check if population can eat
-            timeSinceLastFoodConsumption += Time.deltaTime;
-            if (timeSinceLastFoodConsumption >= foodConsumptionInterval)
+            if (people.Count > 0)
             {
-                timeSinceLastFoodConsumption -= foodConsumptionInterval;
-                for (int i = 0; i < people.Count; i++)
+                // Update time since last food consumption and check if population can eat
+                timeSinceLastFoodConsumption += Time.deltaTime;
+                if (timeSinceLastFoodConsumption >= foodConsumptionInterval)
                 {
-                    IncreaseHunger(i);
+                    timeSinceLastFoodConsumption -= foodConsumptionInterval;
 
-                    if (CanEat(i))
+                    for (int i = 0; i < people.Count; i++)
                     {
-                        Eat(i);
-                    }
-                    else
-                    {
-                        if (CanDie(i))
+                        IncreaseHunger(i);
+
+                        if (CanEat(i))
                         {
-                            Kill(i);
+                            Eat(i);
                         }
                     }
                 }
             }
-
-            // Update time since last berry harvest and check if berries can be harvested
-            timeSinceLastBerryHarvest += Time.deltaTime;
-
-            if (timeSinceLastBerryHarvest >= berryHarvestInterval)
+            else
             {
-                timeSinceLastBerryHarvest -= berryHarvestInterval;
-                if (CanHarvestBerries())
-                {
-                    HarvestBerries();
-                }
+                timeSinceLastFoodConsumption = 0f;
             }
 
-            if (discoveredAxe)
+            //remove people that can die
+            people.RemoveAll(person => person.CanDie());
+
+            if (CanPeopleBeBorn())
+            {
+                timeSinceLastBirth += Time.deltaTime;
+
+                if (timeSinceLastBirth >= birthInterval)
+                {
+                    timeSinceLastBirth -= birthInterval;
+
+                    int numBirths = (int)(people.Count * birthsByPersonPerInterval);
+
+                    for (int i=0;i<numBirths;i++)
+                    {
+                        BirthPerson();
+                    }
+                }
+            } else
+            {
+                timeSinceLastBirth = 0f;
+            }
+
+            if (CanHarvestBerries())
+            {
+                // Update time since last berry harvest and harvest berries
+                timeSinceLastBerryHarvest += Time.deltaTime;
+
+                if (timeSinceLastBerryHarvest >= berryHarvestInterval)
+                {
+                    timeSinceLastBerryHarvest -= berryHarvestInterval;
+
+                    HarvestBerries();
+                }
+            } else
+            {
+                timeSinceLastBerryHarvest = 0f;
+            }
+
+            if (discoveredAxe && CanCutTrees())
             {
                 timeSinceLastTreeCutting += Time.deltaTime;
 
                 if (timeSinceLastTreeCutting >= treeCuttingInterval)
                 {
                     timeSinceLastTreeCutting -= treeCuttingInterval;
-                    if (CanCutTrees())
-                    {
-                        CutTrees();
-                    }
+            
+                    CutTrees();
+                }
+            } else
+            {
+                timeSinceLastTreeCutting = 0f;
+            }
+
+            if (CanFarmProduceFood())
+            {
+                timeSinceLastFarmProduction += Time.deltaTime;
+
+                if (timeSinceLastFarmProduction >= farmProductionInterval)
+                {
+                    timeSinceLastFarmProduction -= farmProductionInterval;
+
+                    ProduceFoodPerFarm();
+                }
+            }
+
+            if (discoveredFarm && CanBuildFarm())
+            {
+                timeSinceLastFarmBuilt += Time.deltaTime;
+
+                if (timeSinceLastFarmBuilt >= buildFarmInterval)
+                {
+                    timeSinceLastFarmBuilt -= buildFarmInterval;
+
+                    BuildFarm();
+                }
+            } else
+            {
+                timeSinceLastFarmBuilt = 0f;
+            }
+
+            if (discoveredHouse && CanBuildHouse())
+            {
+                timeSinceLastHouseBuilt += Time.deltaTime;
+
+                if (timeSinceLastHouseBuilt >= buildHouseInterval)
+                {
+                    timeSinceLastHouseBuilt -= buildHouseInterval;
+
+                    BuildHouse();
+                }
+            } else
+            {
+                timeSinceLastHouseBuilt = 0f;
+            }
+
+            if (unlockedTheArtOfSowing)
+            {
+                timeSinceLastBerryPlanted += Time.deltaTime;
+
+                if (timeSinceLastBerryPlanted >= plantBerryInterval)
+                {
+                    timeSinceLastBerryPlanted -= plantBerryInterval;
+
+                    berryTrees++;
+                }
+            }
+
+            if (unlockedTheArboristWay)
+            {
+                timeSinceLastTreePlanted += Time.deltaTime;
+
+                if (timeSinceLastTreePlanted >= plantTreeInterval)
+                {
+                    timeSinceLastTreePlanted -= plantTreeInterval;
+
+                    trees++;
                 }
             }
 
@@ -173,16 +314,6 @@ namespace CometaPrototypes.WorldSim
             }
         }
 
-        private bool CanDie(int index)
-        {
-            return people[index].hunger >= 100;
-        }
-
-        private void Kill(int index)
-        {
-            people.RemoveAt(index);
-        }
-
         //Give birth a person with needs and hapiness
         public void BirthPerson()
         {
@@ -191,7 +322,7 @@ namespace CometaPrototypes.WorldSim
 
         private bool CanHarvestBerries()
         {
-            return berryTrees > 0;
+            return berryTrees > 0 && people.Count > 0;
         }
 
         private void HarvestBerries()
@@ -199,6 +330,17 @@ namespace CometaPrototypes.WorldSim
             int harvestedBerries = Random.Range(minBerriesPerTree, maxBerriesPerTree + 1);
             berryTrees--;
             food += harvestedBerries;
+        }
+
+        private bool CanFarmProduceFood()
+        {
+            return farms > 0 && people.Count > 0;
+        }
+
+        private void ProduceFoodPerFarm()
+        {
+            int foodPerFarm = Random.Range(minFoodPerFarm, maxFoodPerFarm + 1);
+            food += farms * foodPerFarm;
         }
 
         private bool CanCutTrees()
@@ -213,14 +355,63 @@ namespace CometaPrototypes.WorldSim
             wood += obtainedWood;
         }
 
+        private bool CanBuildFarm()
+        {
+            return wood >= 15 && food < people.Count * 2;
+        }
+
+        private void BuildFarm()
+        {
+            farms++;
+            wood -= 15;
+        }
+
+        private bool CanBuildHouse()
+        {
+            return wood > 15 && people.Count > maxPopulation;
+        }
+
+        private void BuildHouse()
+        {
+            houses++;
+            maxPopulation += populationPerHouse;
+            wood -= 15;
+        }
+
+        private bool CanPeopleBeBorn()
+        {
+            //Cant be born if we have just one or 0 people
+            if (people.Count < 2)
+                return false;
+            //Cant be born if we reached max population
+            if (people.Count >= maxPopulation + 1)
+                return false;
+
+            //Cant be born if we have not the necessary food
+            if (food < people.Count * 1.5f)
+                return false;
+
+            return true;
+        }
+
         private void IncreaseFaith()
         {
-            faithPoints += personFaithPerSecond * Time.deltaTime * people.Count;
+            faithPoints += totalFaithPerSecond * Time.deltaTime;
         }
 
         private void IncreaseInvestigation()
         {
-            investigationPoints += personInvestigationPerSecond * Time.deltaTime * people.Count;
+            investigationPoints += totalInvestigationPerSecond * Time.deltaTime;
+        }
+
+        public float totalFaithPerSecond
+        {
+            get { return personFaithPerSecond * people.Count; }
+        }
+
+        public float totalInvestigationPerSecond
+        {
+            get { return personInvestigationPerSecond * people.Count; }
         }
     }
 
