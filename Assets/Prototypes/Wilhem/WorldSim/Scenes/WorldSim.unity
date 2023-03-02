@@ -502,6 +502,7 @@ RectTransform:
   - {fileID: 585550755}
   - {fileID: 284601799}
   - {fileID: 1960902166}
+  - {fileID: 1059267716}
   - {fileID: 2020956099}
   - {fileID: 937014658}
   m_Father: {fileID: 2045372696}
@@ -1445,17 +1446,25 @@ MonoBehaviour:
   minWoodPerTree: 3
   maxWoodPerTree: 4
   buildFarmInterval: 20
+  buildHouseInterval: 20
+  populationPerHouse: 4
   farmProductionInterval: 15
   minFoodPerFarm: 3
   maxFoodPerFarm: 5
+  plantBerryInterval: 20
+  plantTreeInterval: 30
   discoveredAxe: 0
   discoveredFarm: 0
+  discoveredHouse: 0
+  unlockedTheArtOfSowing: 0
+  unlockedTheArboristWay: 0
   people: []
   food: 0
   wood: 0
   berryTrees: 0
   trees: 0
   farms: 0
+  houses: 0
   faithPoints: 0
   investigationPoints: 0
   personFaithPerSecond: 0
@@ -1466,6 +1475,9 @@ MonoBehaviour:
   timeSinceLastTreeCutting: 0
   timeSinceLastFarmBuilt: 0
   timeSinceLastFarmProduction: 0
+  timeSinceLastHouseBuilt: 0
+  timeSinceLastBerryPlanted: 0
+  timeSinceLastTreePlanted: 0
 --- !u!4 &752804107
 Transform:
   m_ObjectHideFlags: 0
@@ -1623,7 +1635,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 173000686}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -1673,6 +1685,85 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 937014657}
+  m_CullTransparentMesh: 1
+--- !u!1 &1059267715
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1059267716}
+  - component: {fileID: 1059267718}
+  - component: {fileID: 1059267717}
+  m_Layer: 5
+  m_Name: HousesText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1059267716
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059267715}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 173000686}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 867, y: -118.8}
+  m_SizeDelta: {x: 400, y: 57.9035}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1059267717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059267715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 45
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 4
+    m_MaxSize: 45
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Houses: 0'
+--- !u!222 &1059267718
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059267715}
   m_CullTransparentMesh: 1
 --- !u!1 &1071013732
 GameObject:
@@ -2825,7 +2916,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 173000686}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2932,6 +3023,7 @@ MonoBehaviour:
   berriesText: {fileID: 585550756}
   treesText: {fileID: 284601800}
   farmsText: {fileID: 1960902167}
+  housesText: {fileID: 1059267717}
   personUIPooling: {fileID: 488913449}
 --- !u!1001 &1850902679272891016
 PrefabInstance:

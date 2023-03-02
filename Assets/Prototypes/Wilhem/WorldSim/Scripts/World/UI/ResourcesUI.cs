@@ -19,6 +19,7 @@ namespace CometaPrototypes.WorldSim {
         public Text treesText;
 
         public Text farmsText;
+        public Text housesText;
 
         public SimplePooling personUIPooling;
 
@@ -59,6 +60,7 @@ namespace CometaPrototypes.WorldSim {
             treesText.text = "Trees: " + ResourceSimulator.Instance.trees;
 
             farmsText.text = "Farms: "+ResourceSimulator.Instance.farms;
+            housesText.text = "Houses: " + ResourceSimulator.Instance.houses;
 
             List<Person> people = ResourceSimulator.Instance.people;
 
