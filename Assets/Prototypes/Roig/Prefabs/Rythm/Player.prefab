@@ -96,7 +96,10 @@ GameObject:
   - component: {fileID: 1551098220524999108}
   - component: {fileID: 1551098220524999109}
   - component: {fileID: 8275254803231605385}
-  m_Layer: 0
+  - component: {fileID: 7996547187579138758}
+  - component: {fileID: 2351361354249568354}
+  - component: {fileID: 8308165371228303255}
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,6 +198,63 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7996547187579138758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551098220524999112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4208f2fa32be8845933dbb62d6650ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _MaxHealth: 100
+  _OnDamageTaken:
+    m_PersistentCalls:
+      m_Calls: []
+  _OnDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2351361354249568354}
+        m_TargetAssemblyTypeName: RythmResetScene, Assembly-CSharp
+        m_MethodName: ResetScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &2351361354249568354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551098220524999112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305eba639e3d369429bb9707c231d4d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!136 &8308165371228303255
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551098220524999112}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1551098222068990253
 GameObject:
   m_ObjectHideFlags: 0
