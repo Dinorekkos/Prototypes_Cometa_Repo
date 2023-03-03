@@ -25,12 +25,15 @@ public class RythmEnemyController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        RythmMissile missile = other.transform.parent.gameObject.GetComponent<RythmMissile>();
-        if (missile != null)
+        if (other.gameObject.name != "Player")
         {
-            if (missile.ElementalType == _WeakType)
+            RythmMissile missile = other.transform.parent.gameObject.GetComponent<RythmMissile>();
+            if (missile != null)
             {
-                Destroy(gameObject);
+                if (missile.ElementalType == _WeakType)
+                {
+                    Destroy(gameObject);
+                }
             }
         }
     }

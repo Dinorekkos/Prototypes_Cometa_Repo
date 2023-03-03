@@ -58,6 +58,12 @@ public class RythmComboDetector : MonoBehaviour
             else
             {
                 _AvailableCombos.Remove(_AvailableCombos[i]);
+                if (_AvailableCombos.Count <= 0)
+                {
+                    StopCoroutine("ComboTimerCoroutine");
+                    ResetCombo();
+                    return;
+                }
             }
         }
         if (!foundCombo)

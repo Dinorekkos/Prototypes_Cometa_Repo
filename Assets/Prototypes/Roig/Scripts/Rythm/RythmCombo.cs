@@ -13,6 +13,7 @@ public class RythmCombo : ScriptableObject
 
     public bool IsComboStillGoing(int index, RythmNote note)
     {
+        if (index >= _NotesSequence.Count) return false;
         return _NotesSequence[index] == note;
     }
 
