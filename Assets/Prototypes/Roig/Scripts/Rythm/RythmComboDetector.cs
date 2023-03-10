@@ -77,6 +77,7 @@ public class RythmComboDetector : MonoBehaviour
     private void PlayNoteSound(RythmNote note)
     {
         _CurrentNotes.Add(note);
+        if (_NoteAudioSource.isPlaying) return;
         _NoteAudioSource.clip = note.NoteClip;
         _NoteAudioSource.Play();
     }

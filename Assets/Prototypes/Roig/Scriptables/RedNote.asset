@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: RedNote
   m_EditorClassIdentifier: 
   _Note: 0
-  _NoteClip: {fileID: 8300000, guid: 5b5c1571233ec164d972050cdb2e6986, type: 3}
+  _NoteClip: {fileID: 8300000, guid: 0be7c9df70a938e488439da63f592db4, type: 3}

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: BlueNote
   m_EditorClassIdentifier: 
   _Note: 1
-  _NoteClip: {fileID: 8300000, guid: 4de18c8e59a67474b8c65247563eff47, type: 3}
+  _NoteClip: {fileID: 8300000, guid: 411862cd21669c24289fc7a683ae49d3, type: 3}
